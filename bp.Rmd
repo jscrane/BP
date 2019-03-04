@@ -1,0 +1,109 @@
+---
+title: "Blood Pressure"
+output:
+  html_document:
+    df_print: paged
+---
+
+Read and preprocess latest blood-pressure file.
+```{r}
+library(lubridate)
+bp <- read.csv(file="~/src/bp/bp.csv", header=TRUE, sep=",")
+bp$datetime <- paste(bp$date, bp$time)
+dates <- as.Date(bp$datetime)
+mp <- c(min(bp$dia), max(bp$sys))
+cdia <- rgb(0,0,1,1/4)
+csys <- rgb(1,0,0,1/4)
+cpul <- rgb(0,1,0,1/4)
+```
+
+## Summary
+
+Plot systolic and diastolic pressures for all data points.
+```{r}
+hsys <- hist(bp$sys, breaks=10, plot=F)
+hdia <- hist(bp$dia, breaks=10, plot=F)
+mc <- c(0, max(c(hsys$counts, hdia$counts)))
+plot(hdia, col=cdia, xlim=mp, ylim=mc, main = "Overall", xlab = "mmHg")
+plot(hsys, col=csys, xlim=mp, ylim=mc, add=T)
+abline(v=c(mean(bp$sys), mean(bp$dia)), col=c("red","blue"))
+```
+
+### Morning
+Now the same for morning:
+```{r}
+am <- bp[hour(bp$datetime) < 12,]
+hsys_am <- hist(am$sys, plot=F)
+hdia_am <- hist(am$dia, plot=F)
+plot(hdia_am, col=cdia, xlim=mp, ylim=mc, main="Morning", xlab="mmHg")
+plot(hsys_am, col=csys, xlim=mp, ylim=mc, add=T)
+abline(v=c(mean(am$sys), mean(am$dia)), col=c("red", "blue"))
+```
+
+### Evening
+And evening:
+```{r}
+pm <- bp[hour(bp$datetime) >= 12,]
+hsys_pm <- hist(pm$sys, plot=F)
+hdia_pm <- hist(pm$dia, plot=F)
+plot(hdia_pm, col=cdia, xlim=mp, ylim=mc, main="Evening", xlab="mmHg")
+plot(hsys_pm, col=csys, xlim=mp, ylim=mc, add=T)
+abline(v=c(mean(pm$sys), mean(pm$dia)), col=c("red", "blue"))
+```
+
+### Over Time
+
+Systolic and diastolic blood pressure over time.
+```{r}
+plot(dates, bp$sys, xlab="Date", ylab="mmHg", main="Systolic")
+sd <- lm(bp$sys~dates)
+abline(sd, col="red")
+legend("bottomright", bty="n", legend=paste("r^2: ", format(summary(sd)$r.squared, digits=2)))
+plot(dates, bp$dia, xlab="Date", ylab="mmHg", main="Diastolic")
+dd <- lm(bp$dia~dates)
+abline(dd, col="blue")
+legend("bottomright", bty="n", legend=paste("r^2: ", format(summary(dd)$r.squared, digits=2)))
+```
+## Pulse
+
+```{r}
+hpul <- hist(bp$pul, breaks=10, plot=F)
+plot(hpul, col=cpul, main = "Pulse Overall", xlab = "bpm")
+abline(v=mean(bp$pul), col="green")
+```
+
+### Morning
+
+```{r}
+hpul_am <- hist(am$pul, plot=F)
+plot(hpul_am, col=cpul, main="Morning", xlab="bpm")
+abline(v=mean(am$pul), col="green")
+```
+
+### Evening
+
+```{r}
+hpul_pm <- hist(pm$pul, plot=F)
+plot(hpul_pm, col=cpul, main="Evening", xlab="bpm")
+abline(v=mean(pm$pul), col="green")
+```
+
+### Over Time
+
+```{r}
+plot(dates, bp$pul, xlab="Date", ylab="bpm", main="Pulse")
+pd <- lm(bp$pul~dates)
+abline(pd, col="green")
+legend("bottomright", bty="n", legend=paste("r^2: ", format(summary(pd)$r.squared, digits=2)))
+```
+
+## Systolic vs Diastolic Pressure
+
+```{r}
+plot(bp$dia, bp$sys, xlab = "Diastolic", ylab="Systolic")
+msd <- lm(bp$sys~bp$dia)
+abline(msd)
+legend("bottomright", bty="n", legend=paste("r^2: ", format(summary(msd)$r.squared, digits=2)))
+```
+
+
