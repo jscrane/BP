@@ -20,11 +20,11 @@ cpul <- rgb(0,1,0,1/4)
 ```
 A function to plot blood pressure histograms:
 ```{r}
-plot.blood.pressure <- function(bp) {
+plot.blood.pressure <- function(bp, title) {
   hsys <- hist(bp$sys, breaks=10, plot=F)
   hdia <- hist(bp$dia, breaks=10, plot=F)
   mc <- c(0, max(c(hsys$counts, hdia$counts)))
-  plot(hdia, col=cdia, xlim=mp, ylim=mc, main = "Overall", xlab = "mmHg")
+  plot(hdia, col=cdia, xlim=mp, ylim=mc, main = title, xlab = "mmHg")
   plot(hsys, col=csys, xlim=mp, ylim=mc, add=T)
   mdia <- mean(bp$dia)
   msys <- mean(bp$sys)
@@ -37,36 +37,37 @@ plot.blood.pressure <- function(bp) {
 
 Plot systolic and diastolic pressures for all data points.
 ```{r}
-plot.blood.pressure(bp)
+plot.blood.pressure(bp, "Overall")
 ```
 
 ### Morning
 Now the same for morning:
 ```{r}
 am <- bp[hour(bp$datetime) < 12,]
-plot.blood.pressure(am)
+plot.blood.pressure(am, "Morning")
 ```
 
 ### Evening
 And evening:
 ```{r}
 pm <- bp[hour(bp$datetime) >= 12,]
-plot.blood.pressure(pm)
+plot.blood.pressure(pm, "Evening")
 ```
 
 ### Over Time
 
 Systolic and diastolic blood pressure over time.
 ```{r}
-plot(dates, bp$sys, xlab="Date", ylab="mmHg", main="Systolic")
-sd <- lm(bp$sys~dates)
-abline(sd, col="red")
-legend("bottomright", bty="n", legend=paste("r^2: ", format(summary(sd)$r.squared, digits=2)))
-plot(dates, bp$dia, xlab="Date", ylab="mmHg", main="Diastolic")
-dd <- lm(bp$dia~dates)
-abline(dd, col="blue")
-legend("bottomright", bty="n", legend=paste("r^2: ", format(summary(dd)$r.squared, digits=2)))
+plot.dates <- function(dates, points, title, col) {
+  plot(dates, points, xlab="Date", ylab="mmHg", main=title)
+  sd <- lm(points~dates)
+  abline(sd, col=col)
+  legend("bottomright", bty="n", legend=paste("r^2: ", format(summary(sd)$r.squared, digits=2)))
+}
+plot.dates(dates, bp$sys, "Systolic", "red")
+plot.dates(dates, bp$dia, "Diastolic", "blue")
 ```
+
 ## Pulse
 
 ```{r}
@@ -94,10 +95,7 @@ abline(v=mean(pm$pul), col="green")
 ### Over Time
 
 ```{r}
-plot(dates, bp$pul, xlab="Date", ylab="bpm", main="Pulse")
-pd <- lm(bp$pul~dates)
-abline(pd, col="green")
-legend("bottomright", bty="n", legend=paste("r^2: ", format(summary(pd)$r.squared, digits=2)))
+plot.dates(dates, bp$pul, "Pulse", "green")
 ```
 
 ## Systolic vs Diastolic Pressure
