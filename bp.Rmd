@@ -75,25 +75,26 @@ plot.dates(dates, bp$dia, "Diastolic", "blue")
 ## Pulse
 
 ```{r}
-hpul <- hist(bp$pul, breaks=10, plot=F)
-plot(hpul, col=cpul, main = "Pulse Overall", xlab = "bpm")
-abline(v=mean(bp$pul), col="green")
+plot.pulse <- function(pulse, c, title) {
+  hpul <- hist(pulse, breaks=10, plot=F)
+  plot(hpul, col=c, main = title, xlab = "bpm")
+  m <- mean(pulse)
+  abline(v=m, col=c)
+  legend("topright", bty="n", legend=paste("av: ", format(m, digits=2)))
+}
+plot.pulse(bp$pul, cpul, "Overall")
 ```
 
 ### Morning
 
 ```{r}
-hpul_am <- hist(bp[am,]$pul, plot=F)
-plot(hpul_am, col=cpul, main="Morning", xlab="bpm")
-abline(v=mean(bp[am,]$pul), col="green")
+plot.pulse(bp[am,]$pul, cpul, "Morning")
 ```
 
 ### Evening
 
 ```{r}
-hpul_pm <- hist(bp[pm,]$pul, plot=F)
-plot(hpul_pm, col=cpul, main="Evening", xlab="bpm")
-abline(v=mean(bp[pm,]$pul), col="green")
+plot.pulse(bp[pm,]$pul, cpul, "Evening")
 ```
 
 ### Over Time
