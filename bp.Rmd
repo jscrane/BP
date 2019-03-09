@@ -12,6 +12,8 @@ library(lubridate)
 ```{r}
 bp <- read.csv(file="bp.csv", header=TRUE, sep=",")
 bp$datetime <- paste(bp$date, bp$time)
+am <- hour(bp$datetime) < 12
+pm <- hour(bp$datetime) >= 12
 dates <- as.Date(bp$datetime)
 mp <- c(min(bp$dia), max(bp$sys))
 cdia <- rgb(0,0,1,1/4)
@@ -43,15 +45,13 @@ plot.blood.pressure(bp, "Overall")
 ### Morning
 Now the same for morning:
 ```{r}
-am <- bp[hour(bp$datetime) < 12,]
-plot.blood.pressure(am, "Morning")
+plot.blood.pressure(bp[am,], "Morning")
 ```
 
 ### Evening
 And evening:
 ```{r}
-pm <- bp[hour(bp$datetime) >= 12,]
-plot.blood.pressure(pm, "Evening")
+plot.blood.pressure(bp[pm,], "Evening")
 ```
 
 ### Over Time
@@ -59,10 +59,13 @@ plot.blood.pressure(pm, "Evening")
 Systolic and diastolic blood pressure over time.
 ```{r}
 plot.dates <- function(dates, points, title, col) {
-  plot(dates, points, xlab="Date", ylab="mmHg", main=title)
+  cs <- c("lightblue", "blue")
+  plot(dates[am], points[am], xlab="Date", ylab="mmHg", main=title, pch=21, col=cs[1], bg=cs[1])
+  points(dates[pm], points[pm], pch=21, col=cs[2], bg=cs[2])
   sd <- lm(points~dates)
   abline(sd, col=col)
   legend("bottomright", bty="n", legend=paste("r^2: ", format(summary(sd)$r.squared, digits=2)))
+  legend("bottomleft", bty="n", legend=c("am", "pm"), text.col = cs, pt.bg=cs)
 }
 plot.dates(dates, bp$sys, "Systolic", "red")
 plot.dates(dates, bp$dia, "Diastolic", "blue")
@@ -79,17 +82,17 @@ abline(v=mean(bp$pul), col="green")
 ### Morning
 
 ```{r}
-hpul_am <- hist(am$pul, plot=F)
+hpul_am <- hist(bp[am,]$pul, plot=F)
 plot(hpul_am, col=cpul, main="Morning", xlab="bpm")
-abline(v=mean(am$pul), col="green")
+abline(v=mean(bp[am,]$pul), col="green")
 ```
 
 ### Evening
 
 ```{r}
-hpul_pm <- hist(pm$pul, plot=F)
+hpul_pm <- hist(bp[pm,]$pul, plot=F)
 plot(hpul_pm, col=cpul, main="Evening", xlab="bpm")
-abline(v=mean(pm$pul), col="green")
+abline(v=mean(bp[pm,]$pul), col="green")
 ```
 
 ### Over Time
