@@ -60,8 +60,9 @@ Systolic and diastolic blood pressure over time.
 ```{r}
 plot.dates <- function(dates, points, title, col) {
   cs <- c("lightblue", "blue")
-  plot(dates[am], points[am], xlab="Date", ylab="mmHg", main=title, pch=21, col=cs[1], bg=cs[1])
-  points(dates[pm], points[pm], pch=21, col=cs[2], bg=cs[2])
+  plot(dates[am], points[am], xlab="Date", ylab="mmHg", main=title, col=cs[1])
+  points(dates[pm], points[pm], col=cs[2])
+  abline(v=dates[wday(dates) %in% c(1,7)], col="lightgray")
   sd <- lm(points~dates)
   abline(sd, col=col)
   legend("bottomright", bty="n", legend=paste("r^2: ", format(summary(sd)$r.squared, digits=2)))
