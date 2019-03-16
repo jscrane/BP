@@ -58,10 +58,15 @@ plot.blood.pressure(bp[pm,], "Evening")
 
 Systolic and diastolic blood pressure over time.
 ```{r}
+movavg <- function(x, n=5){
+  filter(x,rep(1/n,n), sides=2)
+}
 plot.dates <- function(dates, points, title, col) {
   cs <- c("lightblue", "blue")
   plot(dates[am], points[am], xlab="Date", ylab="mmHg", main=title, col=cs[1])
   points(dates[pm], points[pm], col=cs[2])
+  a <- movavg(points, 7)
+  lines(dates, a)
   abline(v=dates[wday(dates) %in% c(1,7)], col="lightgray")
   sd <- lm(points~dates)
   abline(sd, col=col)
