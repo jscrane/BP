@@ -23,8 +23,8 @@ cpul <- rgb(0,1,0,1/4)
 A function to plot blood pressure histograms:
 ```{r}
 plot.blood.pressure <- function(bp, title) {
-  hsys <- hist(bp$sys, breaks=10, plot=F)
-  hdia <- hist(bp$dia, breaks=10, plot=F)
+  hsys <- hist(bp$sys, plot=F)
+  hdia <- hist(bp$dia, plot=F)
   mc <- c(0, max(c(hsys$counts, hdia$counts)))
   plot(hdia, col=cdia, xlim=mp, ylim=mc, main = title, xlab = "mmHg")
   plot(hsys, col=csys, xlim=mp, ylim=mc, add=T)
@@ -65,7 +65,7 @@ plot.dates <- function(dates, points, title, col) {
   cs <- c("lightblue", "blue")
   plot(dates[am], points[am], xlab="Date", ylab="mmHg", main=title, col=cs[1])
   points(dates[pm], points[pm], col=cs[2])
-  a <- movavg(points, 7)
+  a <- movavg(points, 14)
   lines(dates, a)
   abline(v=dates[wday(dates) %in% c(1,7)], col="lightgray")
   sd <- lm(points~dates)
@@ -81,7 +81,7 @@ plot.dates(dates, bp$dia, "Diastolic", "blue")
 
 ```{r}
 plot.pulse <- function(pulse, c, title) {
-  hpul <- hist(pulse, breaks=10, plot=F)
+  hpul <- hist(pulse, plot=F)
   plot(hpul, col=c, main = title, xlab = "bpm")
   m <- mean(pulse)
   abline(v=m, col=c)
