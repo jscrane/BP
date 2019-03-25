@@ -42,6 +42,13 @@ Plot systolic and diastolic pressures for all data points.
 plot.blood.pressure(bp, "Overall")
 ```
 
+### Recent
+Over the last four weeks:
+```{r}
+recent <- week(now()) - week(bp$datetime) < 4
+plot.blood.pressure(bp[recent,], "Recently")
+```
+
 ### Morning
 Now the same for morning:
 ```{r}
@@ -77,6 +84,15 @@ plot.dates(dates, bp$sys, "Systolic", "red")
 plot.dates(dates, bp$dia, "Diastolic", "blue")
 ```
 
+## Systolic vs Diastolic Pressure
+
+```{r}
+plot(bp$dia, bp$sys, xlab = "Diastolic", ylab="Systolic")
+msd <- lm(bp$sys~bp$dia)
+abline(msd)
+legend("bottomright", bty="n", legend=paste("r^2: ", format(summary(msd)$r.squared, digits=2)))
+```
+
 ## Pulse
 
 ```{r}
@@ -106,15 +122,6 @@ plot.pulse(bp[pm,]$pul, cpul, "Evening")
 
 ```{r}
 plot.dates(dates, bp$pul, "Pulse", "green")
-```
-
-## Systolic vs Diastolic Pressure
-
-```{r}
-plot(bp$dia, bp$sys, xlab = "Diastolic", ylab="Systolic")
-msd <- lm(bp$sys~bp$dia)
-abline(msd)
-legend("bottomright", bty="n", legend=paste("r^2: ", format(summary(msd)$r.squared, digits=2)))
 ```
 
 
