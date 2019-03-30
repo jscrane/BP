@@ -31,7 +31,7 @@ plot.blood.pressure <- function(bp, title) {
   mdia <- mean(bp$dia)
   msys <- mean(bp$sys)
   abline(v=c(msys, mdia), col=c("red","blue"))
-  legend("topright", bty="n", legend=c(paste("dia: ", format(mdia, digits=2)), paste("sys: ", format(msys, digits=2))))
+  legend("topright", bty="n", legend=c(paste("sys: ", format(msys, digits=2)), paste("dia: ", format(mdia, digits=2))))
 }
 ```
 
