@@ -28,7 +28,7 @@ plot.blood.pressure <- function(bp, title) {
   hsys <- hist(bp$sys, plot=F)
   hdia <- hist(bp$dia, plot=F)
   mc <- c(0, max(c(hsys$counts, hdia$counts)))
-  plot(hdia, col=cdia, xlim=mp, ylim=mc, main = title, xlab = "mmHg")
+  plot(hdia, col=cdia, xlim=mp, ylim=mc, main = paste(title, " (", as.Date(min(bp$datetime)), " to ", as.Date(max(bp$datetime)), ")", sep=""), xlab = "mmHg")
   plot(hsys, col=csys, xlim=mp, ylim=mc, add=T)
   mdia <- mean(bp$dia)
   msys <- mean(bp$sys)
@@ -47,7 +47,7 @@ plot.blood.pressure(bp, "Overall")
 ### Recent
 Over the last four weeks:
 ```{r}
-recent <- week(now()) - week(bp$datetime) < 4
+recent <- week(max(bp$datetime)) - week(bp$datetime) < 4
 plot.blood.pressure(bp[recent,], "Recently")
 ```
 
