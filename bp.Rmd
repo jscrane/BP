@@ -12,10 +12,14 @@ Read and preprocess latest blood-pressure file.
 library(lubridate)
 ```
 ```{r}
-bp <- read.csv(file="bp.csv", header=TRUE, sep=",")
+b <- read.csv(file="bp.csv", header=TRUE, sep=",")
+f <- read.csv(file="factors.csv", header=TRUE, sep=",")
+bp <- merge(b, f)
 bp$datetime <- paste(bp$date, bp$time)
 am <- hour(bp$datetime) < 12
 pm <- hour(bp$datetime) >= 12
+workdays <- bp$work == 1
+holidays <- bp$work == 0
 dates <- as.Date(bp$datetime)
 mp <- c(min(bp$dia), max(bp$sys))
 cdia <- rgb(0,0,1,1/4)
@@ -37,8 +41,7 @@ plot.blood.pressure <- function(bp, title) {
 }
 ```
 
-## Summary
-
+## Overall
 Plot systolic and diastolic pressures for all data points.
 ```{r}
 plot.blood.pressure(bp, "Overall")
@@ -52,15 +55,23 @@ plot.blood.pressure(bp[recent,], "Recently")
 ```
 
 ### Morning
-Now the same for morning:
 ```{r}
 plot.blood.pressure(bp[am,], "Morning")
 ```
 
 ### Evening
-And evening:
 ```{r}
 plot.blood.pressure(bp[pm,], "Evening")
+```
+
+### Work days
+```{r}
+plot.blood.pressure(bp[workdays,], "Work")
+```
+
+### Holidays
+```{r}
+plot.blood.pressure(bp[holidays,], "Holidays")
 ```
 
 ### Over Time
