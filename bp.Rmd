@@ -66,9 +66,9 @@ plot.blood.pressure(bp[pm,], "Evening")
 plot.blood.pressure(bp[bp$work == 1,], "Work")
 ```
 
-### Holidays
+### Days Off
 ```{r}
-plot.blood.pressure(bp[bp$work == 0,], "Holidays")
+plot.blood.pressure(bp[bp$work == 0,], "Days Off")
 ```
 
 ### Over Time
