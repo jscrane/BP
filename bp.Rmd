@@ -14,7 +14,8 @@ library(lubridate)
 ```{r}
 b <- read.csv(file="bp.csv", header=TRUE, sep=",")
 f <- read.csv(file="factors.csv", header=TRUE, sep=",")
-bp <- merge(b, f)
+bp <- merge(b, f, all.x = TRUE)
+bp[is.na(bp)] <- 0
 bp$datetime <- as_datetime(paste(bp$date, bp$time))
 mp <- c(min(bp$dia), max(bp$sys))
 cdia <- rgb(0,0,1,1/4)
@@ -75,7 +76,7 @@ plot.blood.pressure(bp[bp$work == 0,], "Days Off")
 
 Systolic and diastolic blood pressure over time.
 ```{r}
-movavg <- function(x, n=5){
+movavg <- function(x, n=14){
   filter(x,rep(1/n,n), sides=2)
 }
 plot.dates <- function(bp, var, title, col, yl="mmHg") {
@@ -83,8 +84,8 @@ plot.dates <- function(bp, var, title, col, yl="mmHg") {
   dates <- bp$datetime
   points <- bp[,var]
   plot(dates[am], points[am], xlab="Date", ylab=yl, main=title, col=cs[1])
-  lines(dates[am], movavg(points[am], 7), col=cs[1])
-  lines(dates[pm], movavg(points[pm], 7), col=cs[2])
+  lines(dates[am], movavg(points[am]), col=cs[1])
+  lines(dates[pm], movavg(points[pm]), col=cs[2])
   abline(v=dates[wday(dates) %in% c(1,7)], col="lightgray")
   sd <- lm(points~dates)
   abline(sd, col=col)
