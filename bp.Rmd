@@ -78,9 +78,10 @@ Systolic and diastolic blood pressure over time.
 movavg <- function(x, n=5){
   filter(x,rep(1/n,n), sides=2)
 }
-plot.dates <- function(bp, points, title, col, yl="mmHg") {
+plot.dates <- function(bp, var, title, col, yl="mmHg") {
   cs <- c("green", "blue")
   dates <- bp$datetime
+  points <- bp[,var]
   plot(dates[am], points[am], xlab="Date", ylab=yl, main=title, col=cs[1])
   points(dates[pm], points[pm], col=cs[2])
   a <- movavg(points, 14)
@@ -91,8 +92,8 @@ plot.dates <- function(bp, points, title, col, yl="mmHg") {
   legend("bottomright", bty="n", legend=paste("r^2: ", format(summary(sd)$r.squared, digits=2)))
   legend("bottomleft", bty="n", legend=c("am", "pm"), text.col = cs, pt.bg=cs)
 }
-plot.dates(bp, bp$sys, "Systolic", "red")
-plot.dates(bp, bp$dia, "Diastolic", "blue")
+plot.dates(bp, "sys", "Systolic", "red")
+plot.dates(bp, "dia", "Diastolic", "blue")
 ```
 
 ## Systolic vs Diastolic Pressure
@@ -132,7 +133,7 @@ plot.pulse(bp[pm,]$pul, cpul, "Evening")
 ### Over Time
 
 ```{r}
-plot.dates(bp, bp$pul, "Pulse", "green", "bpm")
+plot.dates(bp, "pulse", "Pulse", "green", "bpm")
 ```
 
 
