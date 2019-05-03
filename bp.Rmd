@@ -16,10 +16,6 @@ b <- read.csv(file="bp.csv", header=TRUE, sep=",")
 f <- read.csv(file="factors.csv", header=TRUE, sep=",")
 bp <- merge(b, f)
 bp$datetime <- paste(bp$date, bp$time)
-am <- hour(bp$datetime) < 12
-pm <- hour(bp$datetime) >= 12
-workdays <- bp$work == 1
-holidays <- bp$work == 0
 dates <- as.Date(bp$datetime)
 mp <- c(min(bp$dia), max(bp$sys))
 cdia <- rgb(0,0,1,1/4)
@@ -56,22 +52,24 @@ plot.blood.pressure(bp[recent,], "Recently")
 
 ### Morning
 ```{r}
+am <- hour(bp$datetime) < 12
 plot.blood.pressure(bp[am,], "Morning")
 ```
 
 ### Evening
 ```{r}
+pm <- hour(bp$datetime) >= 12
 plot.blood.pressure(bp[pm,], "Evening")
 ```
 
 ### Work days
 ```{r}
-plot.blood.pressure(bp[workdays,], "Work")
+plot.blood.pressure(bp[bp$work == 1,], "Work")
 ```
 
 ### Holidays
 ```{r}
-plot.blood.pressure(bp[holidays,], "Holidays")
+plot.blood.pressure(bp[bp$work == 0,], "Holidays")
 ```
 
 ### Over Time
