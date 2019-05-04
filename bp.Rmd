@@ -84,9 +84,11 @@ plot.dates <- function(bp, var, title, col, yl="mmHg") {
   dates <- bp$datetime
   points <- bp[,var]
   plot(dates[am], points[am], xlab="Date", ylab=yl, main=title, col=cs[1])
+  abline(v=dates[bp$work == 1], col="lightgray")
+  abline(v=dates[pm & (bp$alcohol == 1)], col="red")
+  abline(v=dates[pm & (bp$cycle == 1)], col="green")
   lines(dates[am], movavg(points[am]), col=cs[1])
   lines(dates[pm], movavg(points[pm]), col=cs[2])
-  abline(v=dates[wday(dates) %in% c(1,7)], col="lightgray")
   sd <- lm(points~dates)
   abline(sd, col=col)
   points(dates[am], points[am], col=cs[1])
