@@ -46,7 +46,7 @@ plot.blood.pressure(bp, "Overall")
 ### Recent
 Over the last four weeks:
 ```{r}
-recent <- day(max(bp$datetime)) - day(bp$datetime) < 28
+recent <- max(bp$datetime) - bp$datetime < 28*24*3600
 plot.blood.pressure(bp[recent,], "Recently")
 ```
 
