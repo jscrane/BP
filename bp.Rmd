@@ -6,8 +6,11 @@ output:
 params:
   output_dir: "docs"
 ---
+Blood pressure and pulse readings taken morning and evening with an Omron blood pressure cuff. Also collect binary factors: work, cycling and alcohol. Attempt to correlate blood pressure and pulse with factors.
 
-Read and preprocess latest blood-pressure file.
+Readings start on Feb 8, 2019. Alcohol was abstained from between Jan 1, 2019 and Apr 18, 2019, a period of 109 days.
+
+Read and preprocess latest blood-pressure file. Join with a file containing factors (work, cycling and alcohol).
 ```{r message=FALSE}
 library(lubridate)
 ```
@@ -79,11 +82,13 @@ Systolic and diastolic blood pressure over time.
 movavg <- function(x, n=14){
   filter(x,rep(1/n,n), sides=2)
 }
-plot.dates <- function(bp, var, title, col, yl="mmHg") {
+plot.dates <- function(bp, var, col, yl="mmHg") {
   cs <- c("green", "blue")
   dates <- bp$datetime
   points <- bp[,var]
-  plot(dates[am], points[am], xlab="Date", ylab=yl, main=title, col=cs[1])
+  am <- hour(bp$datetime) < 12
+  pm <- !am
+  plot(dates[am], points[am], xlab="Date", ylab=yl, main=var, col=cs[1])
   abline(v=dates[bp$work == 1], col="lightgray")
   abline(v=dates[pm & (bp$alcohol == 1)], col="red")
   abline(v=dates[pm & (bp$cycle == 1)], col="green")
@@ -96,8 +101,8 @@ plot.dates <- function(bp, var, title, col, yl="mmHg") {
   legend("bottomright", bty="n", legend=paste("r^2: ", format(summary(sd)$r.squared, digits=2)))
   legend("bottomleft", bty="n", legend=c("am", "pm"), text.col = cs, pt.bg=cs)
 }
-plot.dates(bp, "sys", "Systolic", "red")
-plot.dates(bp, "dia", "Diastolic", "blue")
+plot.dates(bp, "sys", "red")
+plot.dates(bp, "dia", "blue")
 ```
 
 ## Systolic vs Diastolic Pressure
@@ -112,32 +117,56 @@ legend("bottomright", bty="n", legend=paste("r^2: ", format(summary(msd)$r.squar
 ## Pulse
 
 ```{r}
-plot.pulse <- function(pulse, c, title) {
-  hpul <- hist(pulse, plot=F)
+plot.pulse <- function(bp, c, title) {
+  hpul <- hist(bp$pulse, plot=F)
   plot(hpul, col=c, main = title, xlab = "bpm")
-  m <- mean(pulse)
+  m <- mean(bp$pulse)
   abline(v=m, col=c)
   legend("topright", bty="n", legend=paste("av: ", format(m, digits=2)))
 }
-plot.pulse(bp$pul, cpul, "Overall")
+plot.pulse(bp, cpul, "Overall")
 ```
 
 ### Morning
-
+Working days and days off.
 ```{r}
-plot.pulse(bp[am,]$pul, cpul, "Morning")
+plot.pulse(bp[am & bp$work==1 & bp$alcohol==0,], cpul, "Morning (work)")
+```
+```{r}
+plot.pulse(bp[am & bp$work==0 & bp$alcohol==0,], cpul, "Morning (off)")
 ```
 
 ### Evening
+Evening of working days and days off.
+```{r}
+plot.pulse(bp[am & bp$work==1 & bp$alcohol==0,], cpul, "Evening (work)")
+```
 
 ```{r}
-plot.pulse(bp[pm,]$pul, cpul, "Evening")
+plot.pulse(bp[pm & bp$work==0 & bp$alcohol==0,], cpul, "Evening (off)")
 ```
 
 ### Over Time
 
 ```{r}
-plot.dates(bp, "pulse", "Pulse", "green", "bpm")
+plot.dates(bp, "pulse", "green", "bpm")
 ```
 
+### Alcohol-free
 
+The initial period without alcohol (between Jan 1 and Apr 18, 2019).
+
+```{r message=FALSE}
+plot.blood.pressure(bp[bp$datetime < "2019-04-18",], "Alcohol-free")
+```
+
+```{r}
+plot.dates(bp[bp$datetime < "2019-04-18",], "sys", "red")
+```
+
+```{r}
+plot.dates(bp[bp$datetime < "2019-04-18",], "dia", "blue")
+```
+```{r}
+plot.dates(bp[bp$datetime < "2019-04-18",], "pulse", "green", "bpm")
+```
