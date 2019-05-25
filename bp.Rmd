@@ -86,7 +86,7 @@ Systolic and diastolic blood pressure over time.
 movavg <- function(x, n=14){
   filter(x,rep(1/n,n), sides=2)
 }
-plot.dates <- function(bp, var, col, yl="mmHg") {
+plot.dates <- function(bp, var, col, yl="mmHg", ma=T) {
   cs <- c("green", "blue")
   dates <- bp$datetime
   points <- bp[,var]
@@ -96,8 +96,10 @@ plot.dates <- function(bp, var, col, yl="mmHg") {
   abline(v=dates[bp$work == 1], col="lightgray")
   abline(v=dates[pm & (bp$alcohol == 1)], col="red")
   abline(v=dates[pm & (bp$cycle == 1)], col="green")
-  lines(dates[am], movavg(points[am]), col=cs[1])
-  lines(dates[pm], movavg(points[pm]), col=cs[2])
+  if (ma) {
+    lines(dates[am], movavg(points[am]), col=cs[1])
+    lines(dates[pm], movavg(points[pm]), col=cs[2])
+  }
   sd <- lm(points~dates)
   abline(sd, col=col)
   points(dates[am], points[am], col=cs[1])
