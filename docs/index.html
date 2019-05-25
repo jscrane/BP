@@ -283,7 +283,7 @@ plot.blood.pressure(bp[pm,], &quot;Evening&quot;)</code></pre>
 <pre class="r"><code>movavg &lt;- function(x, n=14){
   filter(x,rep(1/n,n), sides=2)
 }
-plot.dates &lt;- function(bp, var, col, yl=&quot;mmHg&quot;) {
+plot.dates &lt;- function(bp, var, col, yl=&quot;mmHg&quot;, ma=T) {
   cs &lt;- c(&quot;green&quot;, &quot;blue&quot;)
   dates &lt;- bp$datetime
   points &lt;- bp[,var]
@@ -293,8 +293,10 @@ plot.dates &lt;- function(bp, var, col, yl=&quot;mmHg&quot;) {
   abline(v=dates[bp$work == 1], col=&quot;lightgray&quot;)
   abline(v=dates[pm &amp; (bp$alcohol == 1)], col=&quot;red&quot;)
   abline(v=dates[pm &amp; (bp$cycle == 1)], col=&quot;green&quot;)
-  lines(dates[am], movavg(points[am]), col=cs[1])
-  lines(dates[pm], movavg(points[pm]), col=cs[2])
+  if (ma) {
+    lines(dates[am], movavg(points[am]), col=cs[1])
+    lines(dates[pm], movavg(points[pm]), col=cs[2])
+  }
   sd &lt;- lm(points~dates)
   abline(sd, col=col)
   points(dates[am], points[am], col=cs[1])
