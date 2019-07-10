@@ -1,0 +1,36 @@
+---
+title: "Time Series Analysis"
+output: html_document
+---
+
+```{r echo=FALSE, message=FALSE}
+library(pracma)
+library(lubridate)
+library(tseries)
+```
+```{r}
+bp <- read.csv(file="bp.csv", header=TRUE, sep=",")
+bp[is.na(bp)] <- 0
+bp$datetime <- as_datetime(paste(bp$date, bp$time))
+```
+
+```{r}
+hurstexp(bp$sys)
+hurstexp(bp$dia)
+hurstexp(bp$pulse)
+```
+
+```{r message=FALSE}
+adf.test(bp$sys)
+adf.test(bp$dia)
+adf.test(bp$pulse)
+acf(bp$sys)
+pacf(bp$sys)
+acf(bp$dia)
+pacf(bp$dia)
+acf(bp$pulse)
+pacf(bp$pulse)
+ccf(bp$sys,bp$dia)
+ccf(bp$sys,bp$pulse)
+ccf(bp$dia,bp$pulse)
+```
