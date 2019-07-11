@@ -13,35 +13,67 @@ bp[is.na(bp)] <- 0
 bp$datetime <- as_datetime(paste(bp$date, bp$time))
 ```
 
-### Hurst Exponent
+We analyse the data in two parts: in the first (WN), the subject was working during the week and abstained from alcohol; in the second (CA), the subject was not working, exeercised during the week, and consumed alcolhol at weekends.
+
 ```{r}
-hurstexp(bp$sys)
-hurstexp(bp$dia)
-hurstexp(bp$pulse)
+wn <- bp[bp$datetime < "2019-04-18",]
+ca <- bp[bp$datetime >= "2019-04-18",]
 ```
 
-All these are solidly over 0.5 indicating the presence of long term memory/ persistence/ auto correlation in the series.  This is what is expected from such a bio time series.
+### Hurst Exponent (WN)
+```{r}
+hurstexp(wn$sys)
+hurstexp(wn$dia)
+hurstexp(wn$pulse)
+```
 
-### Augmented Dickey-Fuller Test
+### Augmented Dickey-Fuller Test (WN)
 
 ```{r message=FALSE}
-adf.test(bp$sys)
-adf.test(bp$dia)
-adf.test(bp$pulse)
+adf.test(wn$sys)
+adf.test(wn$dia)
+adf.test(wn$pulse)
 ```
 
 All three series are _stationary_.
 
-### ACF and PACF
+### ACF and PACF (WN)
 
 ```{r}
-acf(bp$sys)
-pacf(bp$sys)
-acf(bp$dia)
-pacf(bp$dia)
-acf(bp$pulse)
-pacf(bp$pulse)
-ccf(bp$sys,bp$dia)
-ccf(bp$sys,bp$pulse)
-ccf(bp$dia,bp$pulse)
+acf(wn$sys, main="Systolic, WN")
+pacf(wn$sys, main="Systolic, WN")
+acf(wn$dia, main="Diastolic, WN")
+pacf(wn$dia, main="Diastolic, WN")
+acf(wn$pulse, main="Pulse, WN")
+pacf(wn$pulse, main="Pulse, WN")
+```
+
+### Hurst Exponent (CA)
+```{r}
+hurstexp(ca$sys)
+hurstexp(ca$dia)
+hurstexp(ca$pulse)
+```
+
+All these are solidly over 0.5 indicating the presence of long term memory/ persistence/ auto correlation in the series.  This is what is expected from such a bio time series.
+
+### Augmented Dickey-Fuller Test (CA)
+
+```{r message=FALSE}
+adf.test(ca$sys)
+adf.test(ca$dia)
+adf.test(ca$pulse)
+```
+
+All three series are _stationary_.
+
+### ACF and PACF (CA)
+
+```{r}
+acf(ca$sys, main="Systolic, CA")
+pacf(ca$sys, main="Systolic, CA")
+acf(ca$dia, main="Diastolic, CA")
+pacf(ca$dia, main="Diastolic, CA")
+acf(ca$pulse, main="Pulse, CA")
+pacf(ca$pulse, main="Pulse, CA")
 ```
