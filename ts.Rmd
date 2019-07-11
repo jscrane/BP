@@ -3,27 +3,38 @@ title: "Time Series Analysis"
 output: html_document
 ---
 
-```{r echo=FALSE, message=FALSE}
+```{r message=FALSE}
 library(pracma)
 library(lubridate)
 library(tseries)
-```
-```{r}
+
 bp <- read.csv(file="bp.csv", header=TRUE, sep=",")
 bp[is.na(bp)] <- 0
 bp$datetime <- as_datetime(paste(bp$date, bp$time))
 ```
 
+### Hurst Exponent
 ```{r}
 hurstexp(bp$sys)
 hurstexp(bp$dia)
 hurstexp(bp$pulse)
 ```
 
+All these are solidly over 0.5 indicating the presence of long term memory/ persistence/ auto correlation in the series.  This is what is expected from such a bio time series.
+
+### Augmented Dickey-Fuller Test
+
 ```{r message=FALSE}
 adf.test(bp$sys)
 adf.test(bp$dia)
 adf.test(bp$pulse)
+```
+
+All three series are _stationary_.
+
+### ACF and PACF
+
+```{r}
 acf(bp$sys)
 pacf(bp$sys)
 acf(bp$dia)
