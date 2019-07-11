@@ -160,7 +160,7 @@ plot.dates(bp, "pulse", "green", "bpm")
 
 ## Alcohol-free
 
-The initial period without alcohol (between Jan 1 and Apr 18, 2019).
+The initial period without alcohol (between Jan 1 and Apr 18, 2019). This coincided with work.
 
 ```{r message=FALSE}
 plot.blood.pressure(bp[bp$datetime < "2019-04-18",], "Alcohol-free")
@@ -175,4 +175,23 @@ plot.dates(bp[bp$datetime < "2019-04-18",], "dia", "blue")
 ```
 ```{r}
 plot.dates(bp[bp$datetime < "2019-04-18",], "pulse", "green", "bpm")
+```
+
+## Alcohol
+
+Subsequent period with alcohol at weekends. This coincided with a period of strenuous daily exercise (cycling).
+
+```{r message=FALSE}
+plot.blood.pressure(bp[bp$datetime >= "2019-04-18",], "Alcohol")
+```
+
+```{r}
+plot.dates(bp[bp$datetime >= "2019-04-18",], "sys", "red")
+```
+
+```{r}
+plot.dates(bp[bp$datetime >= "2019-04-18",], "dia", "blue")
+```
+```{r}
+plot.dates(bp[bp$datetime >= "2019-04-18",], "pulse", "green", "bpm")
 ```
