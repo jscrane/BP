@@ -13,11 +13,14 @@ bp[is.na(bp)] <- 0
 bp$datetime <- as_datetime(paste(bp$date, bp$time))
 ```
 
-We analyse the data in two parts: in the first (WN), the subject was working during the week and abstained from alcohol; in the second (CA), the subject was not working, exeercised during the week, and consumed alcolhol at weekends.
+We analyse the data in two parts: in the first (WN), the subject was working during the week and abstained from alcohol; in the second (CA), the subject was not working, exercised during the week, and consumed alcolhol at weekends.
 
+Since there were multiple readings per day, we take the average.
 ```{r}
 wn <- bp[bp$datetime < "2019-04-18",]
+wn <- aggregate(. ~ date, data=wn, mean)
 ca <- bp[bp$datetime >= "2019-04-18",]
+ca <- aggregate(. ~ date, data=ca, mean)
 ```
 
 ### Hurst Exponent (WN)
