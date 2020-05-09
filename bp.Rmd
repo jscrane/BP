@@ -18,11 +18,15 @@ library(lubridate)
 ```
 ```{r}
 b <- read.csv(file="bp.csv", header=TRUE, sep=",")
+b$date <- as.Date(b$date)
 f <- read.csv(file="factors.csv", header=TRUE, sep=",")
-bp <- merge(b, f, all.x = TRUE)
+f$date <- as.Date(f$date)
+
+bp <- merge(b, f, by.x = "date", by.y = "date", all.x = TRUE)
 bp[is.na(bp)] <- 0
 bp$datetime <- as_datetime(paste(bp$date, bp$time))
 mp <- c(min(bp$dia), max(bp$sys))
+
 cdia <- rgb(0,0,1,1/4)
 csys <- rgb(1,0,0,1/4)
 cpul <- rgb(0,1,0,1/4)
@@ -30,10 +34,11 @@ cpul <- rgb(0,1,0,1/4)
 A function to plot blood pressure histograms:
 ```{r}
 plot.blood.pressure <- function(bp, title) {
-  hsys <- hist(bp$sys, plot=F)
-  hdia <- hist(bp$dia, plot=F)
+  b <- seq(mp[1], mp[2], by=(mp[2] - mp[1]) / 20)
+  hdia <- hist(bp$dia, breaks=b, plot=F)
+  hsys <- hist(bp$sys, breaks=b, plot=F)
   mc <- c(0, max(c(hsys$counts, hdia$counts)))
-  plot(hdia, col=cdia, xlim=mp, ylim=mc, main = paste(title, " (", as.Date(min(bp$datetime)), " to ", as.Date(max(bp$datetime)), ")", sep=""), xlab = "mmHg")
+  plot(hdia, col=cdia, xlim=mp, ylim=mc, main = paste(title, " (", min(bp$date), " to ", max(bp$date), ")", sep=""), xlab = "mmHg")
   plot(hsys, col=csys, xlim=mp, ylim=mc, add=T)
   mdia <- mean(bp$dia)
   msys <- mean(bp$sys)
@@ -52,8 +57,7 @@ plot.blood.pressure(bp, "Overall")
 ### Recent
 Over the last four weeks:
 ```{r}
-recent <- max(bp$datetime) - bp$datetime < 28*24*3600
-plot.blood.pressure(bp[recent,], "Recently")
+plot.blood.pressure(bp[max(bp$date) - bp$date <= 28,], "Recently")
 ```
 
 ### Morning
