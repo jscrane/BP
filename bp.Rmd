@@ -133,36 +133,43 @@ legend("bottomright", bty="n", legend=paste("r^2: ", format(summary(msd)$r.squar
 ```{r}
 prange <- c(min(bp$pulse), max(bp$pulse))
 
-plot.pulse <- function(bp, c, title) {
+plot.pulse <- function(bp, title) {
   pmin <- signif(prange[1] - 5, 1)
   pmax <- signif(prange[2] + 5, 2)
   b <- seq(pmin, pmax, by=((pmax - pmin) / 20))
   hpul <- hist(bp$pulse, breaks=b, plot=F)
-  plot(hpul, col=c, xlim=c(pmin, pmax), main=title, xlab="bpm")
+  plot(hpul, col=cpul, xlim=c(pmin, pmax), main=paste(title, " (", min(bp$date), " to ", max(bp$date), ")", sep=""), xlab="bpm")
   m <- mean(bp$pulse)
-  abline(v=m, col=c)
+  abline(v=m, col=cpul)
   legend("topright", bty="n", legend=paste("av: ", format(m, digits=2)))
 }
-plot.pulse(bp, cpul, "Overall")
+```
+### Overall
+```{r}
+plot.pulse(bp, "Overall")
+```
+### Recently
+```{r}
+plot.pulse(bp[max(bp$date) - bp$date <= 28,], "Recently")
 ```
 
 ### Morning
 Working days and days off.
 ```{r}
-plot.pulse(bp[am & bp$work==1 & bp$alcohol==0,], cpul, "Morning (work)")
+plot.pulse(bp[am & bp$work==1 & bp$alcohol==0,], "Morning (work)")
 ```
 ```{r}
-plot.pulse(bp[am & bp$work==0 & bp$alcohol==0,], cpul, "Morning (off)")
+plot.pulse(bp[am & bp$work==0 & bp$alcohol==0,], "Morning (off)")
 ```
 
 ### Evening
 Evening of working days and days off.
 ```{r}
-plot.pulse(bp[am & bp$work==1 & bp$alcohol==0,], cpul, "Evening (work)")
+plot.pulse(bp[am & bp$work==1 & bp$alcohol==0,], "Evening (work)")
 ```
 
 ```{r}
-plot.pulse(bp[pm & bp$work==0 & bp$alcohol==0,], cpul, "Evening (off)")
+plot.pulse(bp[pm & bp$work==0 & bp$alcohol==0,], "Evening (off)")
 ```
 
 ### Over Time
