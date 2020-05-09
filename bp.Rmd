@@ -8,25 +8,27 @@ output:
 params:
   output_dir: "docs"
 ---
-Blood pressure and pulse readings taken morning and evening with an Omron blood pressure cuff. Also collect binary factors: work, cycling and alcohol. Attempt to correlate blood pressure and pulse with factors.
+Blood pressure and pulse readings taken morning and evening with an Omron blood pressure cuff. Also collect binary factors: work, cycling, other exercise and alcohol.
 
-Readings start on Feb 8, 2019. Alcohol was abstained from between Jan 1, 2019 and Apr 18, 2019, a period of 109 days.
+Readings started on Feb 8, 2019.
 
-Read and preprocess latest blood-pressure file. Join with a file containing factors (work, cycling and alcohol).
+Read and preprocess blood-pressure file. Join with a file of binary factors.
 ```{r message=FALSE}
 library(lubridate)
 ```
 ```{r}
 b <- read.csv(file="bp.csv", header=TRUE, sep=",")
 b$date <- as.Date(b$date)
+bprange <- c(min(b$dia), max(b$sys))
 f <- read.csv(file="factors.csv", header=TRUE, sep=",")
 f$date <- as.Date(f$date)
 
+# merge blood-pressure and factors on date column
 bp <- merge(b, f, by.x = "date", by.y = "date", all.x = TRUE)
 bp[is.na(bp)] <- 0
 bp$datetime <- as_datetime(paste(bp$date, bp$time))
-mp <- c(min(bp$dia), max(bp$sys))
 
+# plot colours
 cdia <- rgb(0,0,1,1/4)
 csys <- rgb(1,0,0,1/4)
 cpul <- rgb(0,1,0,1/4)
@@ -34,12 +36,14 @@ cpul <- rgb(0,1,0,1/4)
 A function to plot blood pressure histograms:
 ```{r}
 plot.blood.pressure <- function(bp, title) {
-  b <- seq(mp[1], mp[2], by=(mp[2] - mp[1]) / 20)
+  xmin <- signif(bprange[1] - 5, 1)
+  xmax <- signif(bprange[2] + 5, 2)
+  b <- seq(xmin, xmax, by=(xmax - xmin) / 20)
   hdia <- hist(bp$dia, breaks=b, plot=F)
   hsys <- hist(bp$sys, breaks=b, plot=F)
-  mc <- c(0, max(c(hsys$counts, hdia$counts)))
-  plot(hdia, col=cdia, xlim=mp, ylim=mc, main = paste(title, " (", min(bp$date), " to ", max(bp$date), ")", sep=""), xlab = "mmHg")
-  plot(hsys, col=csys, xlim=mp, ylim=mc, add=T)
+  ylim <- c(0, max(c(hsys$counts, hdia$counts)))
+  plot(hdia, col=cdia, xlim=c(xmin,xmax), ylim=ylim, main=paste(title, " (", min(bp$date), " to ", max(bp$date), ")", sep=""), xlab="mmHg")
+  plot(hsys, col=csys, xlim=c(xmin,xmax), ylim=mc, add=T)
   mdia <- mean(bp$dia)
   msys <- mean(bp$sys)
   abline(v=c(msys, mdia), col=c("red","blue"))
@@ -87,7 +91,7 @@ plot.blood.pressure(bp[bp$work == 0,], "Days Off")
 ### Over Time
 Systolic and diastolic blood pressure over time.
 ```{r}
-movavg <- function(x, n=14){
+movavg <- function(x, n=14) {
   filter(x,rep(1/n,n), sides=2)
 }
 plot.dates <- function(bp, var, col, yl="mmHg", ma=T) {
@@ -119,7 +123,7 @@ plot.dates(bp, "dia", "blue")
 
 ```{r}
 plot(bp$dia, bp$sys, xlab = "Diastolic", ylab="Systolic")
-msd <- lm(bp$sys~bp$dia)
+msd <- lm(bp$sys ~ bp$dia)
 abline(msd)
 legend("bottomright", bty="n", legend=paste("r^2: ", format(summary(msd)$r.squared, digits=2)))
 ```
@@ -127,9 +131,14 @@ legend("bottomright", bty="n", legend=paste("r^2: ", format(summary(msd)$r.squar
 ## Pulse
 
 ```{r}
+prange <- c(min(bp$pulse), max(bp$pulse))
+
 plot.pulse <- function(bp, c, title) {
-  hpul <- hist(bp$pulse, plot=F)
-  plot(hpul, col=c, main = title, xlab = "bpm")
+  pmin <- signif(prange[1] - 5, 1)
+  pmax <- signif(prange[2] + 5, 2)
+  b <- seq(pmin, pmax, by=((pmax - pmin) / 20))
+  hpul <- hist(bp$pulse, breaks=b, plot=F)
+  plot(hpul, col=c, xlim=c(pmin, pmax), main=title, xlab="bpm")
   m <- mean(bp$pulse)
   abline(v=m, col=c)
   legend("topright", bty="n", legend=paste("av: ", format(m, digits=2)))
