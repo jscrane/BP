@@ -414,11 +414,11 @@ plot.pulse &lt;- function(bp, title) {
 </div>
 <div id="discussion" class="section level3">
 <h3>Discussion</h3>
-<p>The model is complicated by the fact that alcohol was consumed on consecutive days, when it was consumed:</p>
+<p>The model is complicated by the fact that alcohol tended to be consumed on consecutive days, when it was consumed:</p>
 <pre class="r"><code>dates &lt;- f[f$alcohol == 1, &quot;date&quot;]
 length(dates[diff(dates) == -1]) / length(dates)</code></pre>
 <pre><code>## [1] 0.68</code></pre>
-<p>The model considers consecutive days as a single day. It looks for days on which alcohol was consumed, followed by days on which it wasn’t. (Such days are “Day 1” in the graphs above.)</p>
+<p>To deal with this, the model considers consecutive days as a single day. It looks for days on which alcohol was consumed, followed by days on which it wasn’t. (Such days are “Day 1” in the graphs above.)</p>
 <p>The numbers of days per each “day after” illustrate another pattern in the data:</p>
 <pre class="r"><code>ns &lt;- function(n) length(unique(nth.day.after(n)$date))
 sapply(c(0, 1, 2, 3, 4, 5, 6), ns, simplify = T)</code></pre>

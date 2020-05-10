@@ -239,13 +239,13 @@ plot.pulse(nth.day.after(2), "Day 3")
 
 ### Discussion
 
-The model is complicated by the fact that alcohol was consumed on consecutive days, when it was consumed:
+The model is complicated by the fact that alcohol tended to be consumed on consecutive days, when it was consumed:
 ```{r}
 dates <- f[f$alcohol == 1, "date"]
 length(dates[diff(dates) == -1]) / length(dates)
 ```
 
-The model considers consecutive days as a single day. It looks for days on which alcohol was consumed, followed by days on which it wasn't. (Such days are "Day 1" in the graphs above.)
+To deal with this, the model considers consecutive days as a single day. It looks for days on which alcohol was consumed, followed by days on which it wasn't. (Such days are "Day 1" in the graphs above.)
 
 The numbers of days per each "day after" illustrate another pattern in the data:
 ```{r}
