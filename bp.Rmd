@@ -8,7 +8,7 @@ output:
 params:
   output_dir: "docs"
 ---
-Blood pressure and pulse readings taken morning and evening with an Omron blood pressure cuff. Also collect binary factors: work, cycling, other exercise and alcohol.
+Blood pressure and pulse readings taken morning and evening with an Omron blood pressure cuff. Some binary factors were also recorded: work, cycling, other exercise and alcohol.
 
 Readings started on Feb 8, 2019.
 
@@ -33,6 +33,7 @@ cdia <- rgb(0,0,1,1/4)
 csys <- rgb(1,0,0,1/4)
 cpul <- rgb(0,1,0,1/4)
 ```
+
 A function to plot blood pressure histograms:
 ```{r}
 plot.blood.pressure <- function(bp, title) {
@@ -144,10 +145,12 @@ plot.pulse <- function(bp, title) {
   legend("topright", bty="n", legend=c(paste("av: ", format(m, digits=2)), paste("n:", nrow(bp))))
 }
 ```
+
 ### Overall
 ```{r}
 plot.pulse(bp, "Overall")
 ```
+
 ### Recently
 ```{r}
 plot.pulse(bp[max(bp$date) - bp$date <= 28,], "Recently")
