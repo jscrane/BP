@@ -247,14 +247,15 @@ length(dates[diff(dates) == -1]) / length(dates)
 
 The model considers consecutive days as a single day. It looks for days on which alcohol was consumed, followed by days on which it wasn't. (Such days are "Day 1" in the graphs above.)
 
-The numbers of samples for each "day after" illustrate another pattern in the data:
+The numbers of days per each "day after" illustrate another pattern in the data:
 ```{r}
-sapply(c(0, 1, 2, 3, 4, 5, 6), function(n) nrow(nth.day.after(n)), simplify = T)
+ns <- function(n) length(unique(nth.day.after(n)$date))
+sapply(c(0, 1, 2, 3, 4, 5, 6), ns, simplify = T)
 ```
 
-On about half of the occasions when alcohol was consumed, it was also consumed 5 days later (i.e., a Sunday followed by a Friday). On nearly all occasions when it was consumed, it was not consumed during the following 4 days (i.e., Monday to Thursday).
+On about half of the occasions when alcohol was consumed, it was also consumed 5 days later (e.g., a Sunday followed by a Friday). On most occasions when it was consumed, it was not consumed during the following 4 days (e.g., Monday to Thursday).
 
-Or another way:
+This is confirmed by looking at the days of the week on which it was consumed:
 ```{r}
 table(wday(dates, label=T, abbr=T))
 ```
